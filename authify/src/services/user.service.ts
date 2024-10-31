@@ -41,14 +41,14 @@ export class UserService {
 
         const exist = await this.drizzle.database.select({ id: users.id }).from(users).where(eq(users.phone, phone)).execute();
         if (exist || exist[0].hasOwnProperty('id')) { throw new Error(`Auth error: Phone already registered`) }
-        
+
         phone = await this.formatPhone(phone);
 
         const hashedPassword = await this.bcrypt.generateHash(password);
-        
+
         let result = await this.drizzle.database.insert(users).values({ name, phone, favorite_number, password: hashedPassword }).execute();;
-        
-      
+
+
         return result.hasOwnProperty('rowCount');
     }
 
@@ -87,7 +87,8 @@ export class UserService {
         } else {
             const dbUserData = await this.drizzle.database.select().from(users).where(eq(users.id, userId)).execute();
             const dbUserPublicData = { name: dbUserData[0].name, phone: dbUserData[0].phone, favorite_number: dbUserData[0].favorite_number };
-            await this.redis.client.set(String(userId), JSON.stringify(dbUserPublicData));
+            // caching for 24 hours
+            await this.redis.client.set(String(userId), JSON.stringify(dbUserPublicData), 'EX', 3600 * 24);
             return dbUserPublicData;
         }
     }
