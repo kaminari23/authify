@@ -1,0 +1,10 @@
+{
+    "dialect": "postgresql",
+    "schema": "./src/models/user.model.ts",
+    "out": "./drizzle",
+    "driver": "pglite",
+    "dbCredentials": {
+        "connectionString": "postgres://postgres@77.123.155.228:5432/authify"
+    },
+    "url": "postgres://postgres@77.123.155.228:5432/authify"
+}
